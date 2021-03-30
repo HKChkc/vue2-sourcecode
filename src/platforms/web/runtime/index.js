@@ -4,6 +4,7 @@ import Vue from 'core/index'
 import config from 'core/config'
 import { extend, noop } from 'shared/util'
 import { mountComponent } from 'core/instance/lifecycle'
+// isBrowser: 判断规则-查看window是否存在
 import { devtools, inBrowser } from 'core/util/index'
 
 import {
@@ -39,6 +40,7 @@ Vue.prototype.$mount = function (
   hydrating?: boolean
 ): Component {
   el = el && inBrowser ? query(el) : undefined
+  // ——> src\core\instance\lifecycle.js
   return mountComponent(this, el, hydrating)
 }
 

@@ -18,6 +18,7 @@ import {
   invokeWithErrorHandling
 } from '../util/index'
 
+// 取的是上一个实例
 export let activeInstance: any = null
 export let isUpdatingChildComponent: boolean = false
 
@@ -58,28 +59,37 @@ export function initLifecycle (vm: Component) {
 export function lifecycleMixin (Vue: Class<Component>) {
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
+    // 获取上一次的挂载元素
     const prevEl = vm.$el
+    // 获取上一次的vnode
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
+    // Vue.prototype.__patch__ ： src\platforms\web\runtime\index.js -> src\platforms\web\runtime\patch.js -> src\core\vdom\patch.js -> createPatchFunction
     // based on the rendering backend used.
     if (!prevVnode) {
+      // 初次渲染
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // 更新
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
+    // 保存上一次的实例
     restoreActiveInstance()
     // update __vue__ reference
+    // 如果上一次的挂载元素存在，则将上一次挂载元素的 __vue__ 的应用置为空
     if (prevEl) {
       prevEl.__vue__ = null
     }
+    // 重置当前挂载元素的__vue__属性为当前实例
     if (vm.$el) {
       vm.$el.__vue__ = vm
     }
     // if parent is an HOC, update its $el as well
+    // 如果实例是一个高阶组件，则同时更新父实例的$el 为当前实例的
     if (vm.$vnode && vm.$parent && vm.$vnode === vm.$parent._vnode) {
       vm.$parent.$el = vm.$el
     }
@@ -143,7 +153,9 @@ export function mountComponent (
   el: ?Element,
   hydrating?: boolean
 ): Component {
+  // 添加实例的$el属性
   vm.$el = el
+  // 
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
@@ -164,6 +176,7 @@ export function mountComponent (
       }
     }
   }
+  // beforeMount
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -186,6 +199,7 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 更新组件
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }

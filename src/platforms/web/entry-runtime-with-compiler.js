@@ -17,12 +17,18 @@ const idToTemplate = cached((id) => {
   return el && el.innerHTML;
 });
 
+/**
+ * HKC_summary
+ * 1. 挂载优先级： render > temlate > el
+ * 2. 如果render，render函数的优先级最高，优先挂
+ */
 const mount = Vue.prototype.$mount;
 Vue.prototype.$mount = function (
   el?: string | Element,
+  // hydrating 是否是服务端渲染
   hydrating?: boolean
 ): Component {
-  el = el && query(el);
+  el = el && query(el); // 找不到，创建一个空的div
 
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
@@ -35,11 +41,15 @@ Vue.prototype.$mount = function (
 
   const options = this.$options;
   // resolve template/el and convert to render function
+  // 挂载优先级： render > template > el
+
+  // 如果 没有options 中没有 render
   if (!options.render) {
     let template = options.template;
     if (template) {
       if (typeof template === "string") {
         if (template.charAt(0) === "#") {
+          // 如果template 是 id选择器，则取其 innerHTML
           template = idToTemplate(template);
           /* istanbul ignore if */
           if (process.env.NODE_ENV !== "production" && !template) {
@@ -50,6 +60,7 @@ Vue.prototype.$mount = function (
           }
         }
       } else if (template.nodeType) {
+        // 元素节点 取其 innerHTML
         template = template.innerHTML;
       } else {
         if (process.env.NODE_ENV !== "production") {
@@ -58,6 +69,7 @@ Vue.prototype.$mount = function (
         return this;
       }
     } else if (el) {
+      //  如果没有render、template，存在el，取el的outerHTML
       template = getOuterHTML(el);
     }
     if (template) {
@@ -66,6 +78,7 @@ Vue.prototype.$mount = function (
         mark("compile");
       }
 
+      // todo compile skip
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
