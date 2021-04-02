@@ -50,6 +50,7 @@ export default class Watcher {
     isRenderWatcher?: boolean
   ) {
     this.vm = vm
+    // ?? isRenderWatcher?? 
     if (isRenderWatcher) {
       vm._watcher = this
     }

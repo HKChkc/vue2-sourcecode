@@ -55,7 +55,7 @@ export default class Dep {
 // 当前的watcher，当前需要计算的watcher是全局唯一的，因为一次只能计算一个watcher
 Dep.target = null
 const targetStack = []
-
+// ?? targetStack.length 会大于2吗
 export function pushTarget (target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
