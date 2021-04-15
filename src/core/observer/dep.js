@@ -20,6 +20,7 @@ export default class Dep {
     this.subs = []
   }
 
+  // 当前依赖收集对应的watcher
   addSub (sub: Watcher) {
     this.subs.push(sub)
   }
@@ -30,6 +31,7 @@ export default class Dep {
 
   depend () {
     if (Dep.target) {
+      // watcher 的 addDep
       Dep.target.addDep(this)
     }
   }

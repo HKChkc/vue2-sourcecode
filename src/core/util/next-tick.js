@@ -40,6 +40,7 @@ let timerFunc
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  // 首选promise
   const p = Promise.resolve()
   timerFunc = () => {
     p.then(flushCallbacks)
@@ -79,16 +80,19 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   }
 } else {
   // Fallback to setTimeout.
+  // 最后才是 setTimeout
   timerFunc = () => {
     setTimeout(flushCallbacks, 0)
   }
 }
 
+// Vue.nextTick()
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
   callbacks.push(() => {
     if (cb) {
       try {
+        // 调用传入的回调
         cb.call(ctx)
       } catch (e) {
         handleError(e, ctx, 'nextTick')

@@ -147,7 +147,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// 挂载组件
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -155,7 +155,7 @@ export function mountComponent (
 ): Component {
   // 添加实例的$el属性
   vm.$el = el
-  // 
+  // 查看是否有render函数
   if (!vm.$options.render) {
     vm.$options.render = createEmptyVNode
     if (process.env.NODE_ENV !== 'production') {
@@ -177,6 +177,7 @@ export function mountComponent (
     }
   }
   // beforeMount
+  // 调用beforeMount钩子函数
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -199,7 +200,9 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
-    // 更新组件
+    // 声明更新组件的方法
+    // vm._render() -> 生成vdom
+    // vm._update() -> 新旧vdom比对， 得到真实的dom
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }

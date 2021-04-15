@@ -36,7 +36,7 @@ export function toggleObserving (value: boolean) {
  */
 export class Observer {
   value: any;
-  dep: Dep;
+  dep: Dep; // 小管家：未来如果有新属性的增删或者数组元素的增删， Vue.set(obj, 'foo', 'foo')
   vmCount: number; // number of vms that have this object as root $data
 
   constructor (value: any) {
@@ -44,7 +44,9 @@ export class Observer {
     this.dep = new Dep()
     this.vmCount = 0
     def(value, '__ob__', this)
+    // 根据传入的数据类型做相应的处理
     if (Array.isArray(value)) {
+      // 如果是数组， 走原型链
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -52,6 +54,7 @@ export class Observer {
       }
       this.observeArray(value)
     } else {
+      // 如果是对象，则遍历处理
       this.walk(value)
     }
   }
@@ -64,6 +67,7 @@ export class Observer {
   walk (obj: Object) {
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
+      // 遍历对象，每个key都执行defineReactive
       defineReactive(obj, keys[i])
     }
   }
@@ -86,6 +90,7 @@ export class Observer {
  */
 function protoAugment (target, src: Object) {
   /* eslint-disable no-proto */
+  // 修改数组实例的原型为覆盖过7个方法的原型对象
   target.__proto__ = src
   /* eslint-enable no-proto */
 }
@@ -111,8 +116,10 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
   }
+  // 获取一个Observer实例
   let ob: Observer | void
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    // 如果已经是一个Observer实例则直接返回其ob
     ob = value.__ob__
   } else if (
     shouldObserve &&
@@ -121,6 +128,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     Object.isExtensible(value) &&
     !value._isVue
   ) {
+    // 首次创建一个新实例
     ob = new Observer(value)
   }
   if (asRootData && ob) {
@@ -139,6 +147,7 @@ export function defineReactive (
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // key 对应的小管家dep
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -153,15 +162,20 @@ export function defineReactive (
     val = obj[key]
   }
 
+  // 递归
   let childOb = !shallow && observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
       const value = getter ? getter.call(obj) : val
+      // 拦截key的获取，依赖收集
       if (Dep.target) {
+        // dep: watcher-> n : n
         dep.depend()
+        // 如果存在字ob: 主要用于未来对象可能有属性的增删，数组会有元素的增删
         if (childOb) {
+          // 对象内部的小管家要和当前的watcher建立关系
           childOb.dep.depend()
           if (Array.isArray(value)) {
             dependArray(value)
@@ -188,6 +202,7 @@ export function defineReactive (
         val = newVal
       }
       childOb = !shallow && observe(newVal)
+      // 通知更新
       dep.notify()
     }
   })

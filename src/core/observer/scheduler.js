@@ -73,6 +73,7 @@ function flushSchedulerQueue () {
   flushing = true
   let watcher, id
 
+  // 为什么要先进行排序
   // Sort queue before flush.
   // This ensures that:
   // 1. Components are updated from parent to child. (because parent is always
@@ -162,10 +163,13 @@ function callActivatedHooks (queue) {
  * pushed when the queue is being flushed.
  */
 export function queueWatcher (watcher: Watcher) {
+  // 获取watcher id 
   const id = watcher.id
+  // 判断是否已经入队，
   if (has[id] == null) {
     has[id] = true
     if (!flushing) {
+      // 入队
       queue.push(watcher)
     } else {
       // if already flushing, splice the watcher based on its id
@@ -184,6 +188,7 @@ export function queueWatcher (watcher: Watcher) {
         flushSchedulerQueue()
         return
       }
+      // 刷新队列
       nextTick(flushSchedulerQueue)
     }
   }
