@@ -19,7 +19,7 @@ const idToTemplate = cached((id) => {
 
 /**
  * HKC_summary
- * 1. 挂载优先级： render > temlate > el
+ * 1. 挂载优先级： render > template > el
  * 2. 如果render，render函数的优先级最高，优先挂
  */
 const mount = Vue.prototype.$mount;
