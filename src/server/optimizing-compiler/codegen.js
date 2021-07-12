@@ -36,6 +36,7 @@ export const RAW = 0
 export const INTERPOLATION = 1
 export const EXPRESSION = 2
 
+// ast -> code
 export function generate (
   ast: ASTElement | void,
   options: CompilerOptions

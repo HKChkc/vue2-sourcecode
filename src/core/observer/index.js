@@ -46,7 +46,7 @@ export class Observer {
     def(value, '__ob__', this)
     // 根据传入的数据类型做相应的处理
     if (Array.isArray(value)) {
-      // 如果是数组， 走原型链
+      // 如果是数组， 走原型覆盖
       if (hasProto) {
         protoAugment(value, arrayMethods)
       } else {
@@ -117,6 +117,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     return
   }
   // 获取一个Observer实例
+  // 执行过程中出现一个对象，就会创建一个Observer实例
   let ob: Observer | void
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     // 如果已经是一个Observer实例则直接返回其ob

@@ -79,6 +79,7 @@ Vue.prototype.$mount = function (
       }
 
       // todo compile skip
+      // 编译：获取渲染函数
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
@@ -100,6 +101,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 执行原有方法z
   return mount.call(this, el, hydrating);
 };
 

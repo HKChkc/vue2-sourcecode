@@ -1,4 +1,4 @@
-/**
+––/**
  * Virtual DOM patching algorithm based on Snabbdom by
  * Simon Friis Vindum (@paldepind)
  * Licensed under the MIT License
@@ -401,6 +401,7 @@ export function createPatchFunction (backend) {
     }
   }
 
+  // 重排
   function updateChildren (parentElm, oldCh, newCh, insertedVnodeQueue, removeOnly) {
     let oldStartIdx = 0
     let newStartIdx = 0
@@ -539,6 +540,7 @@ export function createPatchFunction (backend) {
       return
     }
 
+    // 获取属性
     let i
     const data = vnode.data
     if (isDef(data) && isDef(i = data.hook) && isDef(i = i.prepatch)) {
@@ -551,21 +553,29 @@ export function createPatchFunction (backend) {
       for (i = 0; i < cbs.update.length; ++i) cbs.update[i](oldVnode, vnode)
       if (isDef(i = data.hook) && isDef(i = i.update)) i(oldVnode, vnode)
     }
+    // 新节点没有文本
     if (isUndef(vnode.text)) {
+      // 新旧节点都有孩子
       if (isDef(oldCh) && isDef(ch)) {
         if (oldCh !== ch) updateChildren(elm, oldCh, ch, insertedVnodeQueue, removeOnly)
       } else if (isDef(ch)) {
+        // 新节点有孩子
         if (process.env.NODE_ENV !== 'production') {
           checkDuplicateKeys(ch)
         }
         if (isDef(oldVnode.text)) nodeOps.setTextContent(elm, '')
+        // 新增
         addVnodes(elm, null, ch, 0, ch.length - 1, insertedVnodeQueue)
       } else if (isDef(oldCh)) {
+        // 旧节点有孩子节点，新节点没有
+        // 删除
         removeVnodes(oldCh, 0, oldCh.length - 1)
       } else if (isDef(oldVnode.text)) {
+        // 老节点有文本
         nodeOps.setTextContent(elm, '')
       }
     } else if (oldVnode.text !== vnode.text) {
+      // 新旧节点都有文本，且文本不同
       nodeOps.setTextContent(elm, vnode.text)
     }
     if (isDef(data)) {

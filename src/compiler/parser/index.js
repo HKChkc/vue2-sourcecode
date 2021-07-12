@@ -76,6 +76,7 @@ export function createASTElement(
 /**
  * Convert HTML string to AST.
  */
+// 三个parser HTML/ TEXT/ filter
 export function parse(
   template: string,
   options: CompilerOptions
@@ -94,6 +95,8 @@ export function parse(
 
   delimiters = options.delimiters;
 
+  // 解析过程
+  // 栈
   const stack = [];
   const preserveWhitespace = options.preserveWhitespace !== false;
   const whitespaceOption = options.whitespace;
@@ -203,6 +206,7 @@ export function parse(
     }
   }
 
+  // 核心解析方法
   parseHTML(template, {
     warn,
     expectHTML: options.expectHTML,
@@ -212,6 +216,7 @@ export function parse(
     shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
     shouldKeepComment: options.comments,
     outputSourceRange: options.outputSourceRange,
+    // 开始标签
     start(tag, attrs, unary, start, end) {
       // check namespace.
       // inherit parent ns if there is one

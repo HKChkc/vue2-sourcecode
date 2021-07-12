@@ -56,7 +56,7 @@ export function initMixin (Vue: Class<Component>) {
     initRender(vm)  // slots/$createElement
     callHook(vm, 'beforeCreate') // 组件创建之前的钩子
     initInjections(vm) // resolve injections before data/props, 注入祖辈传递的数据
-    initState(vm) // 组件数据初始化， props/data/methods/computed/watcher
+    initState(vm) // 组件数据初始化， props/data/methods/computed/watch
     initProvide(vm) // resolve provide after data/props
     callHook(vm, 'created')
 
