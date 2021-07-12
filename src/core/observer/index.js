@@ -43,6 +43,7 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 定义是一个属性
     def(value, '__ob__', this)
     // 根据传入的数据类型做相应的处理
     if (Array.isArray(value)) {
@@ -157,6 +158,7 @@ export function defineReactive (
   }
 
   // cater for pre-defined getter/setters
+  // 自定义getter
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
@@ -241,7 +243,9 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
     target[key] = val
     return val
   }
+  // 核心
   defineReactive(ob.value, key, val)
+  // 通知更新
   ob.dep.notify()
   return val
 }
@@ -270,10 +274,12 @@ export function del (target: Array<any> | Object, key: any) {
   if (!hasOwn(target, key)) {
     return
   }
+  // 删除属性，通知更新
   delete target[key]
   if (!ob) {
     return
   }
+  // 通知更新
   ob.dep.notify()
 }
 

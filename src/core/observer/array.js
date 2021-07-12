@@ -23,6 +23,7 @@ const methodsToPatch = [
 /**
  * Intercept mutating methods and emit events
  */
+// 拦截改变原数组的方法，并且派发事件
 methodsToPatch.forEach(function (method) {
   // cache original method
   // 缓存原始方法
