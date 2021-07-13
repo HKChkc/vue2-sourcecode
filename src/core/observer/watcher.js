@@ -54,6 +54,7 @@ export default class Watcher {
     if (isRenderWatcher) {
       vm._watcher = this
     }
+    // ? vm._watchers 何时声明
     vm._watchers.push(this)
     // options
     if (options) {
@@ -69,6 +70,7 @@ export default class Watcher {
     this.id = ++uid // uid for batching
     this.active = true
     this.dirty = this.lazy // for lazy watchers
+    // ? watcher 为什么要收集依赖
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -147,11 +149,13 @@ export default class Watcher {
     let i = this.deps.length
     while (i--) {
       const dep = this.deps[i]
+      // 如果依赖已经去除，则同样去除依赖中的watcher
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
       }
     }
     let tmp = this.depIds
+    // 重新更新依赖，保存新的依赖
     this.depIds = this.newDepIds
     this.newDepIds = tmp
     this.newDepIds.clear()
@@ -172,6 +176,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
+      // 将当前的watcher入队
       queueWatcher(this)
     }
   }
@@ -219,6 +224,7 @@ export default class Watcher {
   /**
    * Depend on all deps collected by this watcher.
    */
+  // 收集所有依赖
   depend () {
     let i = this.deps.length
     while (i--) {

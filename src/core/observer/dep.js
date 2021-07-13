@@ -36,6 +36,7 @@ export default class Dep {
     }
   }
 
+  // 通知更新，遍历当前依赖保存的watchers，依次执行watcher 的 update 方法
   notify () {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
